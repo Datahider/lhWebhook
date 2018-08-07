@@ -29,7 +29,7 @@ class lhTgBot extends lhTestWebhook {
         if (preg_match("/^\/(\w+)/", $text, $matches)) {
             $answer = $this->chatterbox->scriptStart($matches[1]);
         } else {
-            $answer = $cb->process($text);
+            $answer = $this->chatterbox->process($text);
         }
         
         $this->apiQuery('sendMessage', [
