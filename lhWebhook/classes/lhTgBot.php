@@ -32,9 +32,23 @@ class lhTgBot extends lhTestWebhook {
             $answer = $this->chatterbox->process($text);
         }
         
+        if (count($answer['hints'])) {
+            foreach ($answer['hints'] as $hint) {
+                $hints[] = [[ 'text' => $hint ]];
+            }
+            $keyb = [
+                'resize_keyboard' => true,
+                'one_time_keyboard' => true,
+                'keyboard' => $hints
+            ];
+        } else {
+            $keyb = [ 'remove_keyboard' => true ];
+        }
+        
         $this->apiQuery('sendMessage', [
             'text' => $answer['text'],
-            'chat_id' => $this->request->message->chat->id
+            'chat_id' => $this->request->message->chat->id,
+            'reply_markup' => json_encode($keyb)
         ]);
         
         return '';
