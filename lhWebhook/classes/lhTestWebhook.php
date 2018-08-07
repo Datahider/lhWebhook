@@ -20,7 +20,7 @@ class lhTestWebhook implements lhWebhookInterface {
     protected $session;
 
     public function __construct($token) {
-        $this->session = new lhSessionFile('webhook-'.$token);
+        $this->session = new lhSessionFile($token);
         if ($this->session->get('existing') != 'yes') {
             $this->session->destroy();
             throw new Exception("Can't find session id webhook-$token");
