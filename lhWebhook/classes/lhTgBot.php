@@ -24,7 +24,13 @@ class lhTgBot extends lhTestWebhook {
         $this->initRequest();
         $this->initChatterBox();
         
-        $answer = $this->chatterbox->answer($this->request->message->text);
+        $text = $this->request->message->text;
+        
+        if (preg_match("/^\/(\w+)/", $text, $matches)) {
+            $answer = $this->chatterbox->scriptStart($matches[1]);
+        } else {
+            $answer = $cb->process($text);
+        }
         
         $this->apiQuery('sendMessage', [
             'text' => $answer->text,
