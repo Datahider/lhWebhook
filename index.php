@@ -8,7 +8,7 @@
 define('LH_LIB_ROOT', "/Users/User/MyData/phplib");
 define('LH_SESSION_DIR', "/Users/User/MyData/lhsessiondata");
 require_once LH_LIB_ROOT . '/lhChatterBoxDataProviders/classes/lhSessionFile.php';
-require_once 'classes/lhTestWebhook.php';
+require_once 'lhWebhook/classes/lhTestWebhook.php';
 
 $s = new lhSessionFile('webhook-1212121');
 $s->set('existing', 'yes');
