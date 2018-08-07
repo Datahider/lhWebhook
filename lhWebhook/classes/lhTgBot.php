@@ -14,28 +14,44 @@
 class lhTgBot extends lhTestWebhook {
     
     protected $request;
+    protected $chatterbox;
 
     public function __construct($token) {
         parent::__construct($token);
     }
     
     public function run() {
-        $this->retrieveRequest();
+        $this->initRequest();
+        $this->initChatterBox();
+        
+        $answer = $this->chatterbox->answer($this->request->message->text);
+        
         $this->apiQuery('sendMessage', [
-            'text' => 'Я тут',
+            'text' => $answer->text,
             'chat_id' => $this->request->message->chat->id
         ]);
         
         return '';
     }
     
-    private function retrieveRequest() {
+    private function initRequest() {
         $f = fopen('php://input', 'r');
         $json = stream_get_contents($f);
         
         $this->request = json_decode($json);
     }
     
+    private function initChatterBox() {
+        $c = new lhChatterBox($this->session->get('session_id'));
+        $script = new lhCSML();
+        $script->loadCsml(LH_SESSION_DIR.$this->session->get('session_id')."/csml.xml");
+        $aiml = new lhAIML();
+        $aiml->loadAiml(LH_SESSION_DIR.$this->session->get('session_id')."/aiml.xml");
+        $c->setAIProvider($aiml);
+        $c->setScriptProvider($script);
+        $this->chatterbox = $c;
+    }
+
     private function apiQuery($func, $data) {
         $ch = curl_init('https://api.telegram.org/bot'.$this->session->get('bot_token').'/'.$func);
         if ( $ch ) {
