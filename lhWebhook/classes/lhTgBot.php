@@ -33,7 +33,7 @@ class lhTgBot extends lhTestWebhook {
         }
         
         $this->apiQuery('sendMessage', [
-            'text' => $answer->text,
+            'text' => $answer['text'],
             'chat_id' => $this->request->message->chat->id
         ]);
         
