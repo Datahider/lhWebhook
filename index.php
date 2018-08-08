@@ -14,7 +14,7 @@ require_once 'lhWebhook/classes/lhTestWebhook.php';
 $s = new lhSessionFile('1212121');
 $s->set('existing', 'yes');
 
-echo 'Проверка lhTextWebhook';
+echo 'Проверка lhTestWebhook';
 
 try {
     $w = new lhTestWebhook('1281803');

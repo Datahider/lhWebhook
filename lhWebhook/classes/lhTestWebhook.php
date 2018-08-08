@@ -17,12 +17,12 @@
 require_once __DIR__ . '/../interface/lhWebhookInterface.php';
 class lhTestWebhook implements lhWebhookInterface {
     
-    protected $session;
+    protected $botdata;
 
     public function __construct($token) {
-        $this->session = new lhSessionFile($token);
-        if ($this->session->get('existing') != 'yes') {
-            $this->session->destroy();
+        $this->botdata = new lhSessionFile($token);
+        if ($this->botdata->get('existing') != 'yes') {
+            $this->botdata->destroy();
             throw new Exception("Can't find session id webhook-$token");
         }
     }

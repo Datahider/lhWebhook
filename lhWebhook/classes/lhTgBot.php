@@ -62,11 +62,11 @@ class lhTgBot extends lhTestWebhook {
     }
     
     private function initChatterBox() {
-        $c = new lhChatterBox($this->session->get('session_id'));
+        $c = new lhChatterBox('tgu'.$this->request->message->from->id);
         $script = new lhCSML();
-        $script->loadCsml(LH_SESSION_DIR.$this->session->get('session_id')."/csml.xml");
+        $script->loadCsml(LH_SESSION_DIR.$this->botdata->get('session_id')."/csml.xml");
         $aiml = new lhAIML();
-        $aiml->loadAiml(LH_SESSION_DIR.$this->session->get('session_id')."/aiml.xml");
+        $aiml->loadAiml(LH_SESSION_DIR.$this->botdata->get('session_id')."/aiml.xml");
         $c->setAIProvider($aiml);
         $c->setScriptProvider($script);
         $this->chatterbox = $c;
