@@ -73,7 +73,7 @@ class lhTgBot extends lhTestWebhook {
     }
 
     private function apiQuery($func, $data) {
-        $ch = curl_init('https://api.telegram.org/bot'.$this->session->get('bot_token').'/'.$func);
+        $ch = curl_init('https://api.telegram.org/bot'.$this->botdata->get('bot_token').'/'.$func);
         if ( $ch ) {
             if (curl_setopt_array( $ch, array(
                 CURLOPT_POST => true,
