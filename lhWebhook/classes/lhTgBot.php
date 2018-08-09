@@ -60,7 +60,11 @@ class lhTgBot extends lhAbstractBotWebhook {
     }
     
     protected function getRequestText() {
-        return $this->request->message->text;
+        if ($this->request->message->text) {
+            return $this->request->message->text;
+        } else {
+            throw new Exception("I don't have any text in request ".print_r($this->request, true));
+        }
     }
     
     protected function getRequestChat() {
