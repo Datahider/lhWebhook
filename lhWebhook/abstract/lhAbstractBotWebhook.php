@@ -69,12 +69,12 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     protected function processAdminActions($text) {
         $this->session = new lhSessionFile($this->sessionPrefix().$this->getRequestSender());
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
-        if (preg_match("/\/(\S+)\s(.*)$/", $full_command, $matches)) {
+        if (preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)) {
             switch ($matches[1]) {
                 case 'wantadmin':
                     return $this->cmdWantAdmin();
                 case 'setadmin':
-                    return $this->cmdSetAdmin($matches[2]);
+                    return $this->cmdSetAdmin($matches[3]);
                 default:
                     break;
             }
