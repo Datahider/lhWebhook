@@ -111,6 +111,8 @@ class lhTgBot extends lhAbstractBotWebhook {
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
                 .'</a></i>';
             }
+        } else {
+            return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
         }
     }
     
@@ -132,6 +134,8 @@ class lhTgBot extends lhAbstractBotWebhook {
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
                 .'</a></i>';
             }
+        } else {
+            return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
         }
     }
     
