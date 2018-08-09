@@ -36,7 +36,7 @@ class lhTgBot extends lhAbstractBotWebhook {
     }
     
     protected function makeKeyboard($answer) {
-            if (count($answer['hints'])) {
+            if (isset($answer['hints']) && count($answer['hints'])) {
             foreach ($answer['hints'] as $hint) {
                 $hints[] = [[ 'text' => $hint ]];
             }
