@@ -23,16 +23,32 @@ class lhTgBot extends lhTestWebhook {
     public function run() {
         $this->initRequest();
         $this->initChatterBox();
-        
         $text = $this->request->message->text;
         
+        $answer = $this->processChatterbox($text);
+        
+        $api_result = $this->apiQuery('sendMessage', [
+            'text' => $answer['text'],
+            'chat_id' => $this->request->message->chat->id,
+            'parse_mode' => 'HTML',
+            'reply_markup' => $this->makeKeyboard($answer)
+        ]);
+        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
+        return '';
+    }
+
+    private function processChatterbox($text) {
         if (preg_match("/^\/(\w+)/", $text, $matches)) {
             $answer = $this->chatterbox->scriptStart($matches[1]);
         } else {
             $answer = $this->chatterbox->process($text);
         }
-        
-        if (count($answer['hints'])) {
+        return $answer;
+    }
+
+    
+    private function makeKeyboard($answer) {
+            if (count($answer['hints'])) {
             foreach ($answer['hints'] as $hint) {
                 $hints[] = [[ 'text' => $hint ]];
             }
@@ -44,17 +60,10 @@ class lhTgBot extends lhTestWebhook {
         } else {
             $keyb = [ 'remove_keyboard' => true ];
         }
-        
-        $api_result = $this->apiQuery('sendMessage', [
-            'text' => $answer['text'],
-            'chat_id' => $this->request->message->chat->id,
-            'parse_mode' => 'HTML',
-            'reply_markup' => json_encode($keyb)
-        ]);
-        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
-        return '';
+        return json_encode($keyb);
     }
-    
+
+
     private function initRequest() {
         $f = fopen('php://input', 'r');
         $json = stream_get_contents($f);
