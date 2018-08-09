@@ -113,7 +113,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $answer = [ 'text' => $this->answerCmdWantAdmin() ];
         $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
         $this->notifyOwner($notification); 
-        $this->session-set('bot_command', '');
+        $this->session->set('bot_command', '');
         return $answer;
     }
     
