@@ -71,9 +71,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         if (preg_match("/\/(\S+)(.*)$/", $full_command, $matches)) {
             switch ($matches[1]) {
                 case 'wantadmin':
-
-                    break;
-
+                    return $this->cmdWantAdmin();
                 default:
                     break;
             }
@@ -113,6 +111,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
         $this->notifyOwner($notification); 
         $this->sendMessage($answer);
+        return true;
     }
     
     protected function cmdWantOperator() {
