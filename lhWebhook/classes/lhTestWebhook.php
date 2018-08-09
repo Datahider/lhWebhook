@@ -14,18 +14,8 @@
  * @author Peter Datahider
  */
 
-require_once __DIR__ . '/../interface/lhWebhookInterface.php';
-class lhTestWebhook implements lhWebhookInterface {
-    
-    protected $botdata;
-
-    public function __construct($token) {
-        $this->botdata = new lhSessionFile($token);
-        if ($this->botdata->get('existing') != 'yes') {
-            $this->botdata->destroy();
-            throw new Exception("Can't find session id webhook-$token");
-        }
-    }
+require_once __DIR__ . '/../abstract/lhAbstractBotWebhook.php';
+class lhTestWebhook extends lhAbstractBotWebhook {
     
     public function run() {
         return json_encode([
@@ -33,5 +23,10 @@ class lhTestWebhook implements lhWebhookInterface {
             'test' => 'yes'
         ]);
     }
+    
+    protected function initRequest(){}          // Получает текст полученный ботом в запросе
+    protected function getRequestText(){}       // Получает текст полученный ботом в запросе
+    protected function sendMessage($answer){}   // Отправляет ответное сообщение пользователю
+    protected function sessionPrefix(){}        // Возвращает префикс для сессии
     
 }

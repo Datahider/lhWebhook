@@ -11,43 +11,9 @@
  *
  * @author user
  */
-class lhTgBot extends lhTestWebhook {
+class lhTgBot extends lhAbstractBotWebhook {
     
-    protected $request;
-    protected $chatterbox;
-
-    public function __construct($token) {
-        parent::__construct($token);
-    }
-    
-    public function run() {
-        $this->initRequest();
-        $text = $this->request->message->text;
-        
-        $answer = $this->processAdminActions($text);
-        if (!$answer) {
-            $this->initChatterBox();
-            $answer = $this->processChatterbox($text); 
-        }
-        
-        $this->sendMessage($answer);
-        return '';
-    }
-
-    private function processChatterbox($text) {
-        if (preg_match("/^\/(\w+)/", $text, $matches)) {
-            $answer = $this->chatterbox->scriptStart($matches[1]);
-        } else {
-            $answer = $this->chatterbox->process($text);
-        }
-        return $answer;
-    }
-    
-    private function processAdminActions($text) {
-        return false;
-    }
-
-    private function sendMessage($answer) {
+    protected function sendMessage($answer) {
         $api_result = $this->apiQuery('sendMessage', [
             'text' => $answer['text'],
             'chat_id' => $this->request->message->chat->id,
@@ -57,7 +23,7 @@ class lhTgBot extends lhTestWebhook {
         $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
     }
     
-    private function makeKeyboard($answer) {
+    protected function makeKeyboard($answer) {
             if (count($answer['hints'])) {
             foreach ($answer['hints'] as $hint) {
                 $hints[] = [[ 'text' => $hint ]];
@@ -74,25 +40,18 @@ class lhTgBot extends lhTestWebhook {
     }
 
 
-    private function initRequest() {
+    protected function initRequest() {
         $f = fopen('php://input', 'r');
         $json = stream_get_contents($f);
         
         $this->request = json_decode($json);
     }
     
-    private function initChatterBox() {
-        $c = new lhChatterBox('tgu'.$this->request->message->from->id);
-        $script = new lhCSML();
-        $script->loadCsml(LH_SESSION_DIR.$this->botdata->get('session_id')."/csml.xml");
-        $aiml = new lhAIML();
-        $aiml->loadAiml(LH_SESSION_DIR.$this->botdata->get('session_id')."/aiml.xml");
-        $c->setAIProvider($aiml);
-        $c->setScriptProvider($script);
-        $this->chatterbox = $c;
+    protected function getRequestText() {
+        return $this->request->message->text;
     }
 
-    private function apiQuery($func, $data) {
+    protected function apiQuery($func, $data) {
         $ch = curl_init('https://api.telegram.org/bot'.$this->botdata->get('bot_token').'/'.$func);
         if ( $ch ) {
             if (curl_setopt_array( $ch, array(
@@ -109,4 +68,7 @@ class lhTgBot extends lhTestWebhook {
         return false;
     }
     
+    protected function sessionPrefix() {
+        return 'tgu';
+    }
 }
