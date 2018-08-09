@@ -20,7 +20,7 @@ class lhTgBot extends lhAbstractBotWebhook {
             'parse_mode' => 'HTML',
             'reply_markup' => $this->makeKeyboard($answer)
         ]);
-        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
+        $this->botdata->log(lhSessionFile::$facility_debug, $answer, json_encode($api_result));
     }
     
     protected function notifyAdmin($answer) {
