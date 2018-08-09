@@ -48,6 +48,7 @@ class lhTgBot extends lhTestWebhook {
         $this->apiQuery('sendMessage', [
             'text' => $answer['text'],
             'chat_id' => $this->request->message->chat->id,
+            'parse_mode' => 'HTML',
             'reply_markup' => json_encode($keyb)
         ]);
         
