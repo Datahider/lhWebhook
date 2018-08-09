@@ -102,14 +102,14 @@ class lhTgBot extends lhAbstractBotWebhook {
         if ($chat->ok) {
             if ($chat->result->type == 'group') {
                 return '<i>Поступил запрос на предоставление прав администратора '
-                . 'для группы <a href="tg://user?id='.$chat->result->id
+                . 'для группы</i> <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->title
-                .'</a></i>';
+                .'</a>';
             } else {
                 return '<i>Поступил запрос на предоставление прав администратора '
-                . 'для пользователя <a href="tg://user?id='.$chat->result->id
+                . 'для пользователя</i> <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
-                .'</a></i>';
+                .'</a>';
             }
         } else {
             return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
@@ -125,14 +125,14 @@ class lhTgBot extends lhAbstractBotWebhook {
         if ($chat->ok) {
             if ($chat->result->type == 'group') {
                 return '<i>Поступил запрос на предоставление прав оператора '
-                . 'для группы <a href="tg://user?id='.$chat->result->id
+                . 'для группы</i> <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->title
-                .'</a></i>';
+                .'</a>';
             } else {
                 return '<i>Поступил запрос на предоставление прав оператора '
-                . 'для пользователя <a href="tg://user?id='.$chat->result->id
+                . 'для пользователя</i> <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
-                .'</a></i>';
+                .'</a>';
             }
         } else {
             return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
