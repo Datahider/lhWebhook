@@ -101,19 +101,20 @@ class lhTgBot extends lhAbstractBotWebhook {
         $chat = $this->apiQuery('getChat', [ 'chat_id' => $this->getRequestChat()]);
         if ($chat->ok) {
             if ($chat->result->type == 'group') {
-                return '<i>Поступил запрос на предоставление прав администратора '
-                . 'для группы</i> <a href="tg://user?id='.$chat->result->id
+                $text = 'Поступил запрос на предоставление прав администратора '
+                . 'для группы <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->title
-                .'</a><i>. Для предоставления прав введите </i>/setadmin';
+                .'</a>. Для предоставления прав введите /setadmin';
             } else {
-                return '<i>Поступил запрос на предоставление прав администратора '
-                . 'для пользователя</i> <a href="tg://user?id='.$chat->result->id
+                $text = 'Поступил запрос на предоставление прав администратора '
+                . 'для пользователя <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
-                .'</a><i>. Для предоставления прав введите </i>/setadmin';
+                .'</a>. Для предоставления прав введите /setadmin';
             }
         } else {
-            return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
+            $text = 'Не удается получить данные чата '.$this->getRequestChat();
         }
+        return [ 'text' => $text ];
     }
     
     protected function answerCmdWantOperator() {
@@ -124,19 +125,20 @@ class lhTgBot extends lhAbstractBotWebhook {
         $chat = $this->apiQuery('getChat', [ 'chat_id' => $this->getRequestChat()]);
         if ($chat->ok) {
             if ($chat->result->type == 'group') {
-                return '<i>Поступил запрос на предоставление прав оператора '
-                . 'для группы</i> <a href="tg://user?id='.$chat->result->id
+                $text = 'Поступил запрос на предоставление прав оператора '
+                . 'для группы <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->title
-                .'</a><i>. Для предоставления прав введите </i>/setoperator';
+                .'</a>. Для предоставления прав введите /setoperator';
             } else {
-                return '<i>Поступил запрос на предоставление прав оператора '
-                . 'для пользователя</i> <a href="tg://user?id='.$chat->result->id
+                $text = 'Поступил запрос на предоставление прав оператора '
+                . 'для пользователя <a href="tg://user?id='.$chat->result->id
                 .'">'.$chat->result->first_name.' '.$chat->result->last_name
-                .'</a><i>. Для предоставления прав введите </i>/setoperator';
+                .'</a>. Для предоставления прав введите /setoperator';
             }
         } else {
-            return '<i>Не удается получить данные чата</i> '.$this->getRequestChat();
+            $text = 'Не удается получить данные чата '.$this->getRequestChat();
         }
+        return [ 'text' => $text ];
     }
     
 }

@@ -78,8 +78,12 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                     return $this->cmdWantAdmin();
                 case 'setadmin':
                     return $this->cmdSetAdmin($matches[3]);
+                case 'wantoperator':
+                    return $this->cmdWantOperator();
+                case 'setoperator':
+                    return $this->cmdSetOperator($matches[3]);
                 default:
-                    break;
+                    return $this->cmdSessionId($matches[1]);
             }
         }
         return false;
@@ -113,19 +117,16 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
     protected function cmdWantAdmin() {
         $this->botdata->set('wantadmin', $this->getRequestChat());
-        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
-        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
-        $this->notifyOwner($notification); 
+        $this->notifyOwner($this->notificationCmdWantAdmin()); 
         $this->session->set('bot_command', '');
-        return $answer;
+        return $this->answerCmdWantAdmin();
     }
     
     protected function cmdWantOperator() {
         $this->botdata->set('wantoperator', $this->getRequestChat());
-        $answer = [ 'text' => $this->answerCmdWantOperator() ];
-        $notification = [ 'text' => $this->notificationCmdWantOperator() ];
-        $this->notifyAdmin($notification); 
-        $this->sendMessage($answer);
+        $this->notifyAdmin($this->notificationCmdWantOperator()); 
+        $this->session->set('bot_command', '');
+        return $this->answerCmdWantOperator();
     }
     
     protected function cmdSetAdmin($yes) {
@@ -139,7 +140,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                     $this->notifyAdmin([ 'text' => 'Владелец бота одобрил предоставление вам прав администратора' ]);
                 }
             } else {
-                $answer = [ 'text' => 'У вас нет прав на установку администратора этого бота'];
+                $answer = $this->answerInsuficientRights();
             }
             $this->session->set('bot_command', '');
         } elseif(!$yes) {
@@ -154,10 +155,9 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
     protected function cmdSetOperator() {
         $this->botdata->set('wantadmin', $this->getRequestChat());
-        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
         $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
         $this->notifyOwner($notification); 
-        $this->sendMessage($answer);
+        $this->sendMessage($this->answerCmdWantAdmin());
     }
 
     protected function cmdSessionId() {
@@ -166,5 +166,10 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
         $this->notifyOwner($notification); 
         $this->sendMessage($answer);
+    }
+    
+    // Стандартные ответы
+    protected function answerInsuficientRights($param) {
+        return ['text'=>'Недостаточно прав'];
     }
 }
