@@ -45,13 +45,13 @@ class lhTgBot extends lhTestWebhook {
             $keyb = [ 'remove_keyboard' => true ];
         }
         
-        $this->apiQuery('sendMessage', [
+        $api_result = $this->apiQuery('sendMessage', [
             'text' => $answer['text'],
             'chat_id' => $this->request->message->chat->id,
             'parse_mode' => 'HTML',
             'reply_markup' => json_encode($keyb)
         ]);
-        
+        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
         return '';
     }
     
