@@ -144,7 +144,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             $answer = [ 'text' => 'Предоставить права администратора?', 'hints' => ['Да', 'Нет']];
         } else {
             $this->session->set('bot_command', '');
-            $answer = [ 'text' => 'У вас нет прав на установку администратора этого бота'];
+            $answer = [ 'text' => 'Отменено'];
         }
         return $answer;
     }
