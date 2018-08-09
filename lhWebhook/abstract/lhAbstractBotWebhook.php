@@ -47,12 +47,15 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->initRequest();
         $text = $this->getRequestText();
         
-        $answer = $this->processAdminActions($text);
-        if (!$answer) {
-            $this->initChatterBox();
-            $answer = $this->processChatterbox($text); 
+        if ($text) {
+            $answer = $this->processAdminActions($text);
+            if (!$answer) {
+                $this->initChatterBox();
+                $answer = $this->processChatterbox($text); 
+            }
+        } else {
+            $answer = ['text' => lhTextConv::smilesSubstitutions(":think:")];
         }
-        
         $this->sendMessage($answer);
         return '';
     }
