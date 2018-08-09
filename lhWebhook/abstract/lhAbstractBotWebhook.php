@@ -19,12 +19,21 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     protected $request;
     protected $chatterbox;
 
-    abstract protected function initRequest();          // Получает текст полученный ботом в запросе
-    abstract protected function getRequestText();       // Получает текст полученный ботом в запросе
-    abstract protected function sendMessage($answer);   // Отправляет ответное сообщение пользователю
-    abstract protected function sessionPrefix();        // Возвращает префикс для сессии
+    abstract protected function initRequest();                  // Получает текст полученный ботом в запросе
+    abstract protected function getRequestText();               // Получает текст полученный ботом в запросе
+    abstract protected function getRequestChat();               // Получает id чата из которого сделан запрос
+    abstract protected function getRequestSender();             // Получает id отправителя (может отличаться от id чата если это группа)
+    abstract protected function sendMessage($answer);           // Отправляет ответное сообщение пользователю
+    abstract protected function sessionPrefix();                // Возвращает префикс для сессии
+    abstract protected function notificationCmdWantAdmin();     // Возвращает текст уведомления владельза о запросе прав админа
+    abstract protected function answerCmdWantAdmin();           // Возвращает текст ответа пользоавтелю запросившему админские права
+    abstract protected function notificationCmdWantOperator();  // Возвращает текст уведомления владельза о запросе прав админа
+    abstract protected function answerCmdWantOperator();        // Возвращает текст ответа пользоавтелю запросившему админские права
+    abstract protected function notifyOwner($answer);           // Уведомляет владельца бота
+    abstract protected function notifyAdmin($answer);           // Уведомляет администратора бота
+    abstract protected function notifyOperator($answer);        // Уведомляет оператора бота
 
-    
+
     public function __construct($token) {
         $this->botdata = new lhSessionFile($token);
         if ($this->botdata->get('existing') != 'yes') {
@@ -47,7 +56,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return '';
     }
 
-    private function processChatterbox($text) {
+    protected function processChatterbox($text) {
         if (preg_match("/^\/(\w+)/", $text, $matches)) {
             $answer = $this->chatterbox->scriptStart($matches[1]);
         } else {
@@ -56,25 +65,36 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return $answer;
     }
     
-    private function processAdminActions($text) {
-        $session = new lhSessionFile($this->sessionPrefix().$this->request->message->from->id);
+    protected function processAdminActions($text) {
+        $session = new lhSessionFile($this->sessionPrefix().$this->getRequestSender());
+        $full_command = $session->get('bot_command', '') . ' ' . $text;
+        if (preg_match("/\/(\S+)(.*)$/", $full_command, $matches)) {
+            switch ($matches[1]) {
+                case 'wantadmin':
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
         return false;
     }
     
-    private function isAdmin() {
-        return ($this->sessionPrefix().$this->request->message->chat->id == $this->botdata->bot_admin);
+    protected function isAdmin() {
+        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_admin);
     }
 
-    private function isOwner() {
-        return ($this->sessionPrefix().$this->request->message->chat->id == $this->botdata->bot_owner);
+    protected function isOwner() {
+        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_owner);
     }
 
-    private function isOperator() {
-        return ($this->sessionPrefix().$this->request->message->chat->id == $this->botdata->bot_operator);
+    protected function isOperator() {
+        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_operator);
     }
   
-    private function initChatterBox() {
-        $c = new lhChatterBox($this->sessionPrefix().$this->request->message->from->id);
+    protected function initChatterBox() {
+        $c = new lhChatterBox($this->sessionPrefix().$this->getRequestSender());
         $script = new lhCSML();
         $script->loadCsml(LH_SESSION_DIR.$this->botdata->get('session_id')."/csml.xml");
         $aiml = new lhAIML();
@@ -82,5 +102,54 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $c->setAIProvider($aiml);
         $c->setScriptProvider($script);
         $this->chatterbox = $c;
+    }
+    
+    
+    // Команды для администрирования ботов привязанных к сервису
+    
+    protected function cmdWantAdmin() {
+        $this->botdata->set('wantadmin', $this->getRequestChat());
+        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
+        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
+        $this->notifyOwner($notification); 
+        $this->sendMessage($answer);
+    }
+    
+    protected function cmdWantOperator() {
+        $this->botdata->set('wantoperator', $this->getRequestChat());
+        $answer = [ 'text' => $this->answerCmdWantOperator() ];
+        $notification = [ 'text' => $this->notificationCmdWantOperator() ];
+        $this->notifyAdmin($notification); 
+        $this->sendMessage($answer);
+    }
+    
+    protected function cmdSetAdmin() {
+        $owner = $this->botdata->get('bot_owner');
+        if ( $this->getRequestChat() == $owner ) {
+            $wantadmin = $this->botdata->get('wantadmin', '');
+            if ($wantadmin) {
+                $this->botdata->set('bot_admin', $wantadmin);
+                $this->sendMessage([ 'text' => 'Администратор бота установлен']);
+                $this->notifyAdmin([ 'text' => 'Владелец бота одобрил предоставление вам прав администратора' ]);
+            }
+        } else {
+            $this->sendMessage([ 'text' => 'У вас нет прав на установку администратора этого бота']);
+        }
+    }
+    
+    protected function cmdSetOperator() {
+        $this->botdata->set('wantadmin', $this->getRequestChat());
+        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
+        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
+        $this->notifyOwner($notification); 
+        $this->sendMessage($answer);
+    }
+
+    protected function cmdSessionId() {
+        $this->botdata->set('wantadmin', $this->getRequestChat());
+        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
+        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
+        $this->notifyOwner($notification); 
+        $this->sendMessage($answer);
     }
 }
