@@ -22,18 +22,15 @@ class lhTgBot extends lhTestWebhook {
     
     public function run() {
         $this->initRequest();
-        $this->initChatterBox();
         $text = $this->request->message->text;
         
-        $answer = $this->processChatterbox($text);
+        $answer = $this->processAdminActions($text);
+        if (!$answer) {
+            $this->initChatterBox();
+            $answer = $this->processChatterbox($text); 
+        }
         
-        $api_result = $this->apiQuery('sendMessage', [
-            'text' => $answer['text'],
-            'chat_id' => $this->request->message->chat->id,
-            'parse_mode' => 'HTML',
-            'reply_markup' => $this->makeKeyboard($answer)
-        ]);
-        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
+        $this->sendMessage($answer);
         return '';
     }
 
@@ -45,7 +42,20 @@ class lhTgBot extends lhTestWebhook {
         }
         return $answer;
     }
+    
+    private function processAdminActions($text) {
+        return false;
+    }
 
+    private function sendMessage($answer) {
+        $api_result = $this->apiQuery('sendMessage', [
+            'text' => $answer['text'],
+            'chat_id' => $this->request->message->chat->id,
+            'parse_mode' => 'HTML',
+            'reply_markup' => $this->makeKeyboard($answer)
+        ]);
+        $this->botdata->log(lhSessionFile::$facility_debug, json_encode($api_result));
+    }
     
     private function makeKeyboard($answer) {
             if (count($answer['hints'])) {
