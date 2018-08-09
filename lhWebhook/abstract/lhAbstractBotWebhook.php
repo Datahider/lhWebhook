@@ -144,6 +144,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             $this->session-set('bot_command', '/setadmin');
             $answer = [ 'text' => 'У вас нет прав на установку администратора этого бота'];
         }
+        return $answer;
     }
     
     protected function cmdSetOperator() {
