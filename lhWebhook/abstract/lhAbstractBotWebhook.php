@@ -18,6 +18,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     protected $botdata;
     protected $request;
     protected $chatterbox;
+    protected $session;
 
     abstract protected function initRequest();                  // Получает текст полученный ботом в запросе
     abstract protected function getRequestText();               // Получает текст полученный ботом в запросе
@@ -66,12 +67,14 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function processAdminActions($text) {
-        $session = new lhSessionFile($this->sessionPrefix().$this->getRequestSender());
+        $this->session = new lhSessionFile($this->sessionPrefix().$this->getRequestSender());
         $full_command = $session->get('bot_command', '') . ' ' . $text;
-        if (preg_match("/\/(\S+)(.*)$/", $full_command, $matches)) {
+        if (preg_match("/\/(\S+)\s(.*)$/", $full_command, $matches)) {
             switch ($matches[1]) {
                 case 'wantadmin':
                     return $this->cmdWantAdmin();
+                case 'setadmin':
+                    return $this->cmdSetAdmin($matches[2]);
                 default:
                     break;
             }
@@ -121,17 +124,25 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->sendMessage($answer);
     }
     
-    protected function cmdSetAdmin() {
-        $owner = $this->botdata->get('bot_owner');
-        if ( $this->getRequestChat() == $owner ) {
-            $wantadmin = $this->botdata->get('wantadmin', '');
-            if ($wantadmin) {
-                $this->botdata->set('bot_admin', $wantadmin);
-                $this->sendMessage([ 'text' => 'Администратор бота установлен']);
-                $this->notifyAdmin([ 'text' => 'Владелец бота одобрил предоставление вам прав администратора' ]);
+    protected function cmdSetAdmin($yes) {
+        if ($yes == 'Да') {
+            $owner = $this->botdata->get('bot_owner');
+            if ( $this->getRequestChat() == $owner ) {
+                $wantadmin = $this->botdata->get('wantadmin', '');
+                if ($wantadmin) {
+                    $this->botdata->set('bot_admin', $wantadmin);
+                    $answer = [ 'text' => 'Администратор бота установлен'];
+                    $this->notifyAdmin([ 'text' => 'Владелец бота одобрил предоставление вам прав администратора' ]);
+                }
+            } else {
+                $answer = [ 'text' => 'У вас нет прав на установку администратора этого бота'];
             }
+        } elseif(!$yes) {
+            $this->session-set('bot_command', '/setadmin');
+            $answer = [ 'text' => 'Предоставить права администратора', 'hints' => ['Да', 'Нет']];
         } else {
-            $this->sendMessage([ 'text' => 'У вас нет прав на установку администратора этого бота']);
+            $this->session-set('bot_command', '/setadmin');
+            $answer = [ 'text' => 'У вас нет прав на установку администратора этого бота'];
         }
     }
     
