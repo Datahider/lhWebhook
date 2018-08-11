@@ -178,7 +178,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                 if ($wantoperator) {
                     $this->botdata->set('bot_operator', $wantoperator);
                     $answer = [ 'text' => 'Оператор бота установлен'];
-                    $this->notifyAdmin([ 'text' => 'Администратор бота одобрил предоставление вам прав оператора' ]);
+                    $this->notifyOperator([ 'text' => 'Администратор бота одобрил предоставление вам прав оператора' ]);
                 }
             } else {
                 $answer = ['text'=>'Недостаточно прав'];
