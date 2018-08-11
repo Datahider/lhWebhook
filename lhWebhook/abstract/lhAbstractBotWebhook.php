@@ -12,6 +12,7 @@
  * @author user
  */
 require_once __DIR__ . '/../interface/lhWebhookInterface.php';
+require_once LH_LIB_ROOT . '/lhUnifiedBotApi/interface/lhUBAInterface.php';
 
 abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
@@ -20,19 +21,18 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     protected $chatterbox;
     protected $session;
 
-    abstract protected function initRequest();                  // Получает текст полученный ботом в запросе
-    abstract protected function getRequestText();               // Получает текст полученный ботом в запросе
-    abstract protected function getRequestChat();               // Получает id чата из которого сделан запрос
-    abstract protected function getRequestSender();             // Получает id отправителя (может отличаться от id чата если это группа)
-    abstract protected function sendMessage($answer);           // Отправляет ответное сообщение пользователю
+    abstract protected function initRequest();                  // Получает данные запроса. Зависит от платформы
+    abstract protected function getRequestText();               // Получает текст полученный ботом в запросе. Зависит от платформы
+    abstract protected function getRequestChat();               // Получает id чата с префиксом из которого сделан запрос. Зависит от платформы
+    abstract protected function getRequestSender();             // Получает id отправителя с префиксом (может отличаться от id чата если это группа)
     abstract protected function sessionPrefix();                // Возвращает префикс для сессии
     abstract protected function notificationCmdWantAdmin();     // Возвращает текст уведомления владельза о запросе прав админа
     abstract protected function answerCmdWantAdmin();           // Возвращает текст ответа пользоавтелю запросившему админские права
     abstract protected function notificationCmdWantOperator();  // Возвращает текст уведомления владельза о запросе прав админа
     abstract protected function answerCmdWantOperator();        // Возвращает текст ответа пользоавтелю запросившему админские права
-    abstract protected function notifyOwner($answer);           // Уведомляет владельца бота
-    abstract protected function notifyAdmin($answer);           // Уведомляет администратора бота
-    abstract protected function notifyOperator($answer);        // Уведомляет оператора бота
+    abstract protected function sendChatHistory($whom_id, $which_session);     // Отправляет историю чата
+    abstract protected function userLink($id);                  // Ссылка на пользователя с заданным id
+
 
 
     public function __construct($token) {
@@ -59,6 +59,27 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->sendMessage($answer);
         return '';
     }
+    
+    protected function sendMessage($answer, $chat=false) {
+        $api = new lhUBA((array)$this->botdata->get('secrets'));
+        $api->sendTextWithHints(
+            $chat ? $chat : $this->getRequestChat(), 
+            $answer
+        );
+    }
+
+    protected function notifyAdmin($answer) {
+        $this->sendMessage($answer, $this->botdata->get('bot_admin'));
+    }
+    
+    protected function notifyOwner($answer) {
+        $this->sendMessage($answer, $this->botdata->get('bot_owner'));
+    }
+    
+    protected function notifyOperator($answer) {
+        $this->sendMessage($answer, $this->botdata->get('bot_operator'));
+    }
+    
 
     protected function processChatterbox($text) {
         if (preg_match("/^\/(\w+)/", $text, $matches)) {
@@ -131,8 +152,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
     protected function cmdSetAdmin($yes) {
         if ($yes == 'Да') {
-            $owner = $this->botdata->get('bot_owner');
-            if ( $this->getRequestChat() == $owner ) {
+            if ( $this->isOwner() ) {
                 $wantadmin = $this->botdata->get('wantadmin', '');
                 if ($wantadmin) {
                     $this->botdata->set('bot_admin', $wantadmin);
@@ -154,18 +174,40 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function cmdSetOperator() {
-        $this->botdata->set('wantadmin', $this->getRequestChat());
-        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
-        $this->notifyOwner($notification); 
-        $this->sendMessage($this->answerCmdWantAdmin());
+        if ($yes == 'Да') {
+            if ( $this->isAdmin() ) {
+                $wantoperator = $this->botdata->get('wantoperator', '');
+                if ($wantoperator) {
+                    $this->botdata->set('bot_operator', $wantoperator);
+                    $answer = [ 'text' => 'Оператор бота установлен'];
+                    $this->notifyAdmin([ 'text' => 'Администратор бота одобрил предоставление вам прав оператора' ]);
+                }
+            } else {
+                $answer = $this->answerInsuficientRights();
+            }
+            $this->session->set('bot_command', '');
+        } elseif(!$yes) {
+            $this->session->set('bot_command', '/setoperator');
+            $answer = [ 'text' => 'Предоставить права оператора?', 'hints' => ['Да', 'Нет']];
+        } else {
+            $this->session->set('bot_command', '');
+            $answer = [ 'text' => 'Отменено'];
+        }
+        return $answer;
     }
 
-    protected function cmdSessionId() {
-        $this->botdata->set('wantadmin', $this->getRequestChat());
-        $answer = [ 'text' => $this->answerCmdWantAdmin() ];
-        $notification = [ 'text' => $this->notificationCmdWantAdmin() ];
-        $this->notifyOwner($notification); 
-        $this->sendMessage($answer);
+    protected function cmdSessionId($session_id) {
+        if ( $this->isOperator() ) {
+            $session = new lhSessionFile($session_id);
+            if ($session->get('status')) {
+                $session->set('proxy_to', $this->getRequestSender());
+                $this->session->set('operator_for', $session_id);
+                $this->sendChatHistory();
+            } else {
+                $session->destroy();
+            }
+        }
+        return false;
     }
     
     // Стандартные ответы

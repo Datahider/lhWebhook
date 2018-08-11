@@ -13,45 +13,6 @@
  */
 class lhTgBot extends lhAbstractBotWebhook {
     
-    protected function sendMessage($answer, $chat=false) {
-        $api_result = $this->apiQuery('sendMessage', [
-            'text' => $answer['text'],
-            'chat_id' => $chat ? $chat : $this->getRequestChat(),
-            'parse_mode' => 'HTML',
-            'reply_markup' => $this->makeKeyboard($answer)
-        ]);
-        $this->botdata->log(lhSessionFile::$facility_debug, $answer, json_encode($api_result));
-    }
-    
-    protected function notifyAdmin($answer) {
-        $this->sendMessage($answer, $this->botdata->get('bot_admin'));
-    }
-    
-    protected function notifyOwner($answer) {
-        $this->sendMessage($answer, $this->botdata->get('bot_owner'));
-    }
-    
-    protected function notifyOperator($answer) {
-        $this->sendMessage($answer, $this->botdata->get('bot_operator'));
-    }
-    
-    protected function makeKeyboard($answer) {
-            if (isset($answer['hints']) && count($answer['hints'])) {
-            foreach ($answer['hints'] as $hint) {
-                $hints[] = [[ 'text' => $hint ]];
-            }
-            $keyb = [
-                'resize_keyboard' => true,
-                'one_time_keyboard' => true,
-                'keyboard' => $hints
-            ];
-        } else {
-            $keyb = [ 'remove_keyboard' => true ];
-        }
-        return json_encode($keyb);
-    }
-
-
     protected function initRequest() {
         $f = fopen('php://input', 'r');
         $json = stream_get_contents($f);
