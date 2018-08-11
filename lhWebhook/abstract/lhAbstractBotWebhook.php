@@ -105,15 +105,15 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function isAdmin() {
-        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_admin);
+        return ($this->getRequestChat() == $this->botdata->bot_admin);
     }
 
     protected function isOwner() {
-        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_owner);
+        return ($this->getRequestChat() == $this->botdata->bot_owner);
     }
 
     protected function isOperator() {
-        return ($this->sessionPrefix().$this->getRequestChat() == $this->botdata->bot_operator);
+        return ($this->getRequestChat() == $this->botdata->bot_operator);
     }
   
     protected function initChatterBox() {
