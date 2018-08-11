@@ -12,7 +12,7 @@
  * @author user
  */
 require_once __DIR__ . '/../interface/lhWebhookInterface.php';
-require_once LH_LIB_ROOT . '/lhUnifiedBotApi/interface/lhUBAInterface.php';
+require_once LH_LIB_ROOT . '/lhUnifiedBotApi/classes/lhUBA.php';
 
 abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
@@ -20,27 +20,21 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     protected $request;
     protected $chatterbox;
     protected $session;
+    protected $uba;
 
     abstract protected function initRequest();                  // Получает данные запроса. Зависит от платформы
     abstract protected function getRequestText();               // Получает текст полученный ботом в запросе. Зависит от платформы
     abstract protected function getRequestChat();               // Получает id чата с префиксом из которого сделан запрос. Зависит от платформы
     abstract protected function getRequestSender();             // Получает id отправителя с префиксом (может отличаться от id чата если это группа)
-    abstract protected function sessionPrefix();                // Возвращает префикс для сессии
-    abstract protected function notificationCmdWantAdmin();     // Возвращает текст уведомления владельза о запросе прав админа
-    abstract protected function answerCmdWantAdmin();           // Возвращает текст ответа пользоавтелю запросившему админские права
-    abstract protected function notificationCmdWantOperator();  // Возвращает текст уведомления владельза о запросе прав админа
-    abstract protected function answerCmdWantOperator();        // Возвращает текст ответа пользоавтелю запросившему админские права
-    abstract protected function sendChatHistory($whom_id, $which_session);     // Отправляет историю чата
-    abstract protected function userLink($id);                  // Ссылка на пользователя с заданным id
-
-
+    abstract protected function sessionPrefix();                // Возвращает префикс для сессии. Собственно это внутренний id платформы
 
     public function __construct($token) {
         $this->botdata = new lhSessionFile($token);
         if ($this->botdata->get('existing') != 'yes') {
             $this->botdata->destroy();
-            throw new Exception("Can't find session id webhook-$token");
+            throw new Exception("Can't find session id $token");
         }
+        $this->uba = new lhUBA((array)$this->botdata->get('secrets'));
     }
     
     public function run() {
@@ -61,7 +55,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function sendMessage($answer, $chat=false) {
-        $api = new lhUBA((array)$this->botdata->get('secrets'));
+        $api = $this->uba;
         $api->sendTextWithHints(
             $chat ? $chat : $this->getRequestChat(), 
             $answer
@@ -137,17 +131,21 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     // Команды для администрирования ботов привязанных к сервису
     
     protected function cmdWantAdmin() {
-        $this->botdata->set('wantadmin', $this->getRequestChat());
-        $this->notifyOwner($this->notificationCmdWantAdmin()); 
+        $user = $this->getRequestChat();
+        $this->botdata->set('wantadmin', $user);
+        $user_data = $this->uba->getUserData($user);
+        $this->notifyOwner([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права администратора" ]); 
         $this->session->set('bot_command', '');
-        return $this->answerCmdWantAdmin();
+        return [ 'text' => 'Владельцу бота направлен запрос на предоставление прав администратора' ];
     }
     
     protected function cmdWantOperator() {
-        $this->botdata->set('wantoperator', $this->getRequestChat());
-        $this->notifyAdmin($this->notificationCmdWantOperator()); 
+        $user = $this->getRequestChat();
+        $this->botdata->set('wantoperator', $user);
+        $user_data = $this->uba->getUserData($user);
+        $this->notifyAdmin([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права оператора" ]); 
         $this->session->set('bot_command', '');
-        return $this->answerCmdWantOperator();
+        return [ 'text' => 'Администратору бота направлен запрос на предоставление прав оператора' ];
     }
     
     protected function cmdSetAdmin($yes) {
@@ -160,7 +158,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                     $this->notifyAdmin([ 'text' => 'Владелец бота одобрил предоставление вам прав администратора' ]);
                 }
             } else {
-                $answer = $this->answerInsuficientRights();
+                $answer = ['text'=>'Недостаточно прав'];
             }
             $this->session->set('bot_command', '');
         } elseif(!$yes) {
@@ -183,7 +181,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                     $this->notifyAdmin([ 'text' => 'Администратор бота одобрил предоставление вам прав оператора' ]);
                 }
             } else {
-                $answer = $this->answerInsuficientRights();
+                $answer = ['text'=>'Недостаточно прав'];
             }
             $this->session->set('bot_command', '');
         } elseif(!$yes) {
@@ -202,7 +200,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             if ($session->get('status')) {
                 $session->set('proxy_to', $this->getRequestSender());
                 $this->session->set('operator_for', $session_id);
-                $this->sendChatHistory();
+                //$this->sendChatHistory();
             } else {
                 $session->destroy();
             }
@@ -210,8 +208,4 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return false;
     }
     
-    // Стандартные ответы
-    protected function answerInsuficientRights($param) {
-        return ['text'=>'Недостаточно прав'];
-    }
 }

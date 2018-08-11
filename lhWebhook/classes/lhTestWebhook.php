@@ -26,16 +26,10 @@ class lhTestWebhook extends lhAbstractBotWebhook {
     
     protected function initRequest(){}          // Получает текст полученный ботом в запросе
     protected function getRequestText(){}       // Получает текст полученный ботом в запросе
-    protected function sendMessage($answer){}   // Отправляет ответное сообщение пользователю
     protected function sessionPrefix(){}        // Возвращает префикс для сессии
     protected function getRequestChat(){}       // Получает id чата из которого сделан запрос
     protected function getRequestSender(){}     // Получает id отправителя (может отличаться от id чата если это группа)
-    protected function notificationCmdWantAdmin(){}     // Возвращает текст уведомления владельза о запросе прав админа
-    protected function answerCmdWantAdmin(){}           // Возвращает текст ответа пользоавтелю запросившему админские права
-    protected function notificationCmdWantOperator(){}  // Возвращает текст уведомления владельза о запросе прав админа
-    protected function answerCmdWantOperator(){}        // Возвращает текст ответа пользоавтелю запросившему админские права
-    protected function notifyOwner($answer){}           // Уведомляет владельца бота
-    protected function notifyAdmin($answer){}           // Уведомляет администратора бота
-    protected function notifyOperator($answer){}        // Уведомляет оператора бота
-
+    protected function sendChatHistory($whom_id, $which_session){}     // Отправляет историю чата
+    protected function userLink($id){}                  // Ссылка на пользователя с заданным id
+    
 }
