@@ -171,7 +171,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return $answer;
     }
     
-    protected function cmdSetOperator() {
+    protected function cmdSetOperator($yes) {
         if ($yes == 'Да') {
             if ( $this->isAdmin() ) {
                 $wantoperator = $this->botdata->get('wantoperator', '');
@@ -189,7 +189,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             $answer = [ 'text' => 'Предоставить права оператора?', 'hints' => ['Да', 'Нет']];
         } else {
             $this->session->set('bot_command', '');
-            $answer = [ 'text' => 'Отменено'];
+            $answer = [ 'text' => 'Отменено' ];
         }
         return $answer;
     }
