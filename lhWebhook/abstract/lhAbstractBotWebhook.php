@@ -85,7 +85,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function processAdminActions($text) {
-        $this->session = new lhSessionFile($this->sessionPrefix().$this->getRequestSender());
+        $this->session = new lhSessionFile($this->getRequestSender());
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
         if (preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)) {
             switch ($matches[1]) {
@@ -117,7 +117,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
   
     protected function initChatterBox() {
-        $c = new lhChatterBox($this->sessionPrefix().$this->getRequestSender());
+        $c = new lhChatterBox($this->getRequestSender());
         $script = new lhCSML();
         $script->loadCsml(LH_SESSION_DIR.$this->botdata->get('session_id')."/csml.xml");
         $aiml = new lhAIML();
