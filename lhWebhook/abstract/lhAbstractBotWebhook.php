@@ -134,7 +134,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $user = $this->getRequestChat();
         $this->botdata->set('wantadmin', $user);
         $user_data = $this->uba->getUserData($user);
-        $this->notifyOwner([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права администратора" ]); 
+        $this->notifyOwner([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права администратора. Для установки прав введите /setadmin" ]); 
         $this->session->set('bot_command', '');
         return [ 'text' => 'Владельцу бота направлен запрос на предоставление прав администратора' ];
     }
@@ -143,7 +143,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $user = $this->getRequestChat();
         $this->botdata->set('wantoperator', $user);
         $user_data = $this->uba->getUserData($user);
-        $this->notifyAdmin([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права оператора" ]); 
+        $this->notifyAdmin([ 'text' => "Пользователь $user_data[full_name] ($user) запрашивает права оператора. Для установки прав введите /setoperator" ]); 
         $this->session->set('bot_command', '');
         return [ 'text' => 'Администратору бота направлен запрос на предоставление прав оператора' ];
     }
