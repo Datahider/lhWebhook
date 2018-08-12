@@ -103,7 +103,11 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->session = new lhSessionFile($this->getRequestSender());
         $this->session->log('fullchat', 'IN', $text);
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
-        if (preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)) {
+        $bot_username = $this->botdata->get('bot_username');
+        $match = $this->getRequestChat() == $this->getRequestSender() 
+            ? preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)
+            : preg_match("/\/(\S+)\@$bot_username(\s*(.*))$/", $full_command, $matches);
+        if ($match) {
             switch ($matches[1]) {
                 case 'wantadmin':
                     return $this->cmdWantAdmin();

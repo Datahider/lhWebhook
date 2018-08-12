@@ -4,5 +4,6 @@
     "bot_owner":"tst0050usr",
     "bot_operator":"tst0050usr",
     "bot_admin":"tst0050usr",
-    "send_chat_history_lines":1
+    "send_chat_history_lines":1,
+    "bot_username":"testbot"
 }
