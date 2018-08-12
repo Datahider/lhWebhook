@@ -258,6 +258,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                 $answer['mute'] = true;
             }
         } else { // Вызов из run для реплики пользователя с ответом бота
+            $this->session = new lhSessionFile($this->getRequestSender());
             if ($this->session->get('needhelp','')) {
                 $this->sendMessage([ 'text' => 'Требуется помощь оператора с пользователем /'.$this->getRequestSender()], $this->botdata->get('bot_operator'));
             }

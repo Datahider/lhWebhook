@@ -44,7 +44,7 @@ $test_plan = [
     '{"message":{"text":"/tst0050usr","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','Не найден блок "tst0050usr"',
     '{"message":{"text":"/Test1","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0040usr: It is block Test1',
     '{"message":{"text":"/Test1","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: It is block Test1',
-    '{"message":{"text":"Что ты несешь","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Не уверен, что хочу об этом говорить',
+    '{"message":{"text":"Что ты несешь","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0020grp: Требуется помощь оператора с пользователем /tst0000usrto tst0000usr: Не уверен, что хочу об этом говорить',
     '{"message":{"text":"/tst0000usr","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0040usr: OUT Не уверен, что хочу об этом говорить',
     '{"message":{"text":"Шо ты имела ввиду?","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0000usr: Шо ты имела ввиду?',
     '{"message":{"text":"Как погода?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Как погода? hints:Да ну ее, эту погоду. Я опять на море хочу!',
