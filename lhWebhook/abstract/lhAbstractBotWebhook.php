@@ -220,7 +220,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             $session = new lhSessionFile($operator_for);
             $session->set('proxy_to','');
             $this->session->set('operator_for', '');
-            $answer = ['text' => "Сеанс прокси с пользователем $operator_for завершен"];
+            $answer = ['text' => "Сеанс прокси с пользователем /$operator_for завершен"];
         } else {
             $answer = [ 'text' => 'Сеанс прокси не активен' ];
         }
