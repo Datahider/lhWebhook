@@ -48,6 +48,7 @@ $test_plan = [
     '{"message":{"text":"/tst0000usr","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0040usr: OUT Не уверен, что хочу об этом говорить',
     '{"message":{"text":"Шо ты имела ввиду?","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0000usr: Шо ты имела ввиду?',
     '{"message":{"text":"Как погода?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Как погода? hints:Да ну ее, эту погоду. Я опять на море хочу!',
+    '{"message":{"text":"Что ты знаешь о ядерной физике?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Что ты знаешь о ядерной физике? hints:Не уверен, что хочу об этом говорить',
     '{"message":{"text":"/stopproxy","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0040usr: Сеанс прокси с пользователем tst0000usr завершен',
 ];
 
