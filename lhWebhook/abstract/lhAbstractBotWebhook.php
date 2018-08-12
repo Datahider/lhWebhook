@@ -89,7 +89,13 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->sendMessage($answer, $this->botdata->get('bot_operator'));
     }
     
-
+    /**
+     * Начало обработки ИИ
+     * 
+     * @param type $text
+     * @return type
+     * @todo Сделать, чтобы в группах реагировал только на команды с суффиксом @bot_username
+     */
     protected function processChatterbox($text) {
         if (preg_match("/^\/(\w+)/", $text, $matches)) {
             $answer = $this->chatterbox->scriptStart($matches[1]);
