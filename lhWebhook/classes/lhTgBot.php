@@ -11,6 +11,7 @@
  *
  * @author user
  */
+require_once __DIR__ . '/../abstract/lhAbstractBotWebhook.php';
 class lhTgBot extends lhAbstractBotWebhook {
     
     protected function initRequest() {

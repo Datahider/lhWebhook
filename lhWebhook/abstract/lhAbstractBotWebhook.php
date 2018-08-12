@@ -37,6 +37,13 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->uba = new lhUBA((array)$this->botdata->get('secrets'));
     }
     
+    /**
+     * run() - starts webhook processing
+     * 
+     * @todo bot mention processing; 
+     * @todo return have to be platform dependent;
+     * @return string - text answer that have to be returned to calling peer
+     */
     public function run() {
         $this->initRequest();
         $text = $this->getRequestText();
@@ -46,6 +53,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             if (!$answer) {
                 $this->initChatterBox();
                 $answer = $this->processChatterbox($text); 
+                $answer = $this->processProxy($text, $answer);
             }
         } else {
             $answer = ['text' => lhTextConv::smilesSubstitutions(":think:")];
@@ -55,9 +63,16 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function sendMessage($answer, $chat=false) {
+        if (isset($answer['mute'])) return;
+        if ($chat) {
+            (new lhSessionFile($chat))->log('fullchat', 'OUT', $answer['text']);
+        } else {
+            $this->session->log('fullchat', 'OUT', $answer['text']);
+            $chat = $this->getRequestChat();
+        }
         $api = $this->uba;
         $api->sendTextWithHints(
-            $chat ? $chat : $this->getRequestChat(), 
+            $chat, 
             $answer
         );
     }
@@ -86,6 +101,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     
     protected function processAdminActions($text) {
         $this->session = new lhSessionFile($this->getRequestSender());
+        $this->session->log('fullchat', 'IN', $text);
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
         if (preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)) {
             switch ($matches[1]) {
@@ -97,9 +113,13 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                     return $this->cmdWantOperator();
                 case 'setoperator':
                     return $this->cmdSetOperator($matches[3]);
+                case 'stopproxy':
+                    return $this->cmdStopProxy();
                 default:
                     return $this->cmdSessionId($matches[1]);
             }
+        } else {
+            return $this->processProxy($text);            
         }
         return false;
     }
@@ -194,13 +214,28 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return $answer;
     }
 
+    protected function cmdStopProxy() {
+        $operator_for = $this->session->get('operator_for', '');
+        if ($operator_for) {
+            $session = new lhSessionFile($operator_for);
+            $session->set('proxy_to','');
+            $this->session->set('operator_for', '');
+            $answer = ['text' => "Сеанс прокси с пользователем $operator_for завершен"];
+        } else {
+            $answer = [ 'text' => 'Сеанс прокси не активен' ];
+        }
+        return $answer;
+    }
+    
     protected function cmdSessionId($session_id) {
         if ( $this->isOperator() ) {
             $session = new lhSessionFile($session_id);
             if ($session->get('status')) {
                 $session->set('proxy_to', $this->getRequestSender());
+                $session->set('status', 'babbler');
                 $this->session->set('operator_for', $session_id);
-                //$this->sendChatHistory();
+                $this->sendChatHistory($this->getRequestSender(), $session); 
+                return ['text'=>"Зер гуд!!!!!", 'mute' => 'yes'];
             } else {
                 $session->destroy();
             }
@@ -208,4 +243,29 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         return false;
     }
     
+    protected function sendChatHistory($to_id, $which_session) {
+        $chat = $which_session->readLog('fullchat', $this->botdata->get('send_chat_history_lines', 10));
+        $this->sendMessage(['text' => implode("\n", preg_replace("/^\S+: /u", '', $chat))], $to_id);
+    }
+    
+    protected function processProxy($text, $answer=false) {
+        if ($answer === false) { // Вызов из proccessAdminActions для ответа оператора
+            $operator_for = $this->session->get('operator_for');
+            if ($operator_for) {
+                $this->sendMessage(['text'=>$text], $operator_for);
+                $answer['text'] = 'Текст отправлен пользователю';
+                $answer['mute'] = true;
+            }
+        } else { // Вызов из run для реплики пользователя с ответом бота
+            $proxy_to = $this->session->get('proxy_to');
+            if ( $proxy_to ) {
+                $this->sendMessage([
+                    'text' => $text,
+                    'hints' => [ $answer['text'] ]
+                ], $proxy_to);
+                $answer['mute'] = true;
+            }
+        }
+        return $answer;
+    }
 }
