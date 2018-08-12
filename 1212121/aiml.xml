@@ -148,27 +148,9 @@
     <category name="anyway_0">
         <tag>anyway</tag>
         <pattern></pattern>
+        <var name="needhelp">true</var>
         <template>
-            <text>Хм... :flushed:</text>
-        </template>
-        <template>
-            <text>Не знаю что ответить :wink:</text>
-        </template>
-        <template>
-            <text>Не уверен, что хочу об этом говорить :wink:</text>
-        </template>
-        <template>
-            <text>Ты прав, друг мой :wink:</text>
-        </template>
-        <template>
-            <text>Знаешь, в наше время, когда космические корабли бороздят просторы вселенной, надо думать не об этом... :smile:</text>
-        </template>
-        <template>
-            <text>Кстати! У тебя нет знакомого бухгалтера?</text>
-        </template>
-        <template>
-            <text>Ты ставишь меня в тупик. Мне надо подумать...</text>
-            <var name="context">подумать</var>
+            <text>Не уверен, что хочу об этом говорить</text>
         </template>
     </category>
     <category name="anyway_1"/>

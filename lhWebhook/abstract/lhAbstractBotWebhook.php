@@ -233,6 +233,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
             if ($session->get('status')) {
                 $session->set('proxy_to', $this->getRequestSender());
                 $session->set('status', 'babbler');
+                $session->set('needhelp', '');
                 $this->session->set('operator_for', $session_id);
                 $this->sendChatHistory($this->getRequestSender(), $session); 
                 return ['text'=>"Зер гуд!!!!!", 'mute' => 'yes'];
@@ -257,6 +258,9 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
                 $answer['mute'] = true;
             }
         } else { // Вызов из run для реплики пользователя с ответом бота
+            if ($this->session->get('needhelp','')) {
+                $this->sendMessage([ 'text' => 'Требуется помощь оператора с пользователем /'.$this->getRequestSender()], $this->botdata->get('bot_operator'));
+            }
             $proxy_to = $this->session->get('proxy_to');
             if ( $proxy_to ) {
                 $this->sendMessage([
