@@ -105,8 +105,12 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
      * @todo Сделать, чтобы в группах реагировал только на команды с суффиксом @bot_username
      */
     protected function processChatterbox($text) {
-        if (preg_match("/^\/(\w+)/", $text, $matches)) {
-            $answer = $this->chatterbox->scriptStart($matches[1]);
+        if (preg_match("/\/([^\s@]+)(\@(\w*))?(\s+(.*)|)$/", $text, $matches)) {
+            if (!$matches[2] || ($matches[3] == $this->botdata->get('bot_username'))) {
+                $answer = $this->chatterbox->scriptStart($matches[1]);
+            } else {
+                $answer = ['text' => 'Это не мне', 'mute' => true ];
+            }
         } else {
             $answer = $this->chatterbox->process($text);
         }
@@ -118,19 +122,18 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->session->log('fullchat', 'IN', $text);
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
         $bot_username = $this->botdata->get('bot_username');
-        $match = $this->getRequestChat() == $this->getRequestChat() // всегда без суффикса
-            ? preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)
-            : preg_match("/\/(\S+)\@$bot_username(\s*(.*))$/", $full_command, $matches);
-        if ($match) {
+        $match = preg_match("/\/([^\s@]+)(\@(\w*))?(\s+(.*)|)$/", $full_command, $matches);
+        if ($match && (($matches[3] == $bot_username) || (!$matches[2]))) {
+            echo "$matches[1];$matches[2];$matches[3];$matches[4]\n";
             switch ($matches[1]) {
                 case 'wantadmin':
                     return $this->cmdWantAdmin();
                 case 'setadmin':
-                    return $this->cmdSetAdmin($matches[3]);
+                    return $this->cmdSetAdmin(isset($matches[5]) ? $matches[5] : '');
                 case 'wantoperator':
                     return $this->cmdWantOperator();
                 case 'setoperator':
-                    return $this->cmdSetOperator($matches[3]);
+                    return $this->cmdSetOperator(isset($matches[5]) ? $matches[5] : '');
                 case 'stopproxy':
                     return $this->cmdStopProxy();
                 default:

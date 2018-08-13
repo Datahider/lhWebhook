@@ -31,26 +31,27 @@ $test_plan = [
     '{"message":{"text":"1","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: It is block Test1',
     '{"message":{"text":"Как погод?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Да ну ее, эту погоду. Я опять на море хочу!',
     '{"message":{"text":"/start","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Test template. Choose answer 1 or 2',
-    '{"message":{"text":"/wantadmin","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0050usr: Пользователь  (tst0000usr) запрашивает права администратора. Для установки прав введите /setadminto tst0000usr: Владельцу бота направлен запрос на предоставление прав администратора',
-    '{"message":{"text":"/setadmin","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Предоставить права администратора? hints:Да:Нет',
+    '{"message":{"text":"/wantadmin","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0050usr: Пользователь  \(tst0000usr\) запрашивает права администратора. Для установки прав введите /setadminto tst0000usr: Владельцу бота направлен запрос на предоставление прав администратора',
+    '{"message":{"text":"/setadmin","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Предоставить права администратора\? hints:Да:Нет',
     '{"message":{"text":"Да","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Недостаточно прав',
-    '{"message":{"text":"/setadmin","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0050usr: Предоставить права администратора? hints:Да:Нет',
+    '{"message":{"text":"/setadmin","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0050usr: Предоставить права администратора\? hints:Да:Нет',
     '{"message":{"text":"Да","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0000usr: Владелец бота одобрил предоставление вам прав администратораto tst0050usr: Администратор бота установлен',
-    '{"message":{"text":"/wantoperator","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0000usr: Пользователь  (tst0020grp) запрашивает права оператора. Для установки прав введите /setoperatorto tst0020grp: Администратору бота направлен запрос на предоставление прав оператора',
-//   '{"message":{"text":"/wantoperator@testbot","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0000usr: Пользователь  (tst0020grp) запрашивает права оператора. Для установки прав введите /setoperatorto tst0020grp: Администратору бота направлен запрос на предоставление прав оператора',
-    '{"message":{"text":"/setoperator","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0050usr: Предоставить права оператора? hints:Да:Нет',
+    '{"message":{"text":"/wantoperator","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0000usr: Пользователь  \(tst0020grp\) запрашивает права оператора. Для установки прав введите /setoperatorto tst0020grp: Администратору бота направлен запрос на предоставление прав оператора',
+    '{"message":{"text":"/wantoperator@testbot","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0000usr: Пользователь  \(tst0020grp\) запрашивает права оператора. Для установки прав введите /setoperatorto tst0020grp: Администратору бота направлен запрос на предоставление прав оператора',
+    '{"message":{"text":"/setoperator","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0050usr: Предоставить права оператора\? hints:Да:Нет',
     '{"message":{"text":"Да","from":{"id":"0050usr"},"chat":{"id":"0050usr"}}}','to tst0050usr: Недостаточно прав',
-    '{"message":{"text":"/setoperator","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Предоставить права оператора? hints:Да:Нет',
+    '{"message":{"text":"/setoperator","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Предоставить права оператора\? hints:Да:Нет',
     '{"message":{"text":"Да","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0020grp: Администратор бота одобрил предоставление вам прав оператораto tst0000usr: Оператор бота установлен',
-//    '{"message":{"text":"/tst0050usr","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','Не найден блок "tst0050usr"',
+    '{"message":{"text":"/tst0050usr","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: Вызвано исключение при обработке запроса "/tst0050usr" от tst0000usr.*',
     '{"message":{"text":"/Test1","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0040usr: It is block Test1',
     '{"message":{"text":"/Test1","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0000usr: It is block Test1',
     '{"message":{"text":"Что ты несешь","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0020grp: Требуется помощь оператора с пользователем /tst0000usrto tst0000usr: Не уверен, что хочу об этом говорить',
-    '{"message":{"text":"/tst0000usr","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0040usr: OUT Не уверен, что хочу об этом говорить',
-//    '{"message":{"text":"/tst0000usr@testbot","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0040usr: OUT Не уверен, что хочу об этом говорить',
-    '{"message":{"text":"Шо ты имела ввиду?","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0000usr: Шо ты имела ввиду?',
-    '{"message":{"text":"Как погода?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Как погода? hints:Да ну ее, эту погоду. Я опять на море хочу!',
-    '{"message":{"text":"Что ты знаешь о ядерной физике?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Что ты знаешь о ядерной физике? hints:Не уверен, что хочу об этом говорить',
+    '{"message":{"text":"/tst0000usr@lostman","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','',
+    '{"message":{"text":"/tst0000usr@","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','',
+    '{"message":{"text":"/tst0000usr@testbot","from":{"id":"0040usr"},"chat":{"id":"0020grp"}}}','to tst0040usr: OUT Не уверен, что хочу об этом говорить',
+    '{"message":{"text":"Шо ты имела ввиду?","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0000usr: Шо ты имела ввиду\?',
+    '{"message":{"text":"Как погода?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Как погода\? hints:Да ну ее, эту погоду. Я опять на море хочу!',
+    '{"message":{"text":"Что ты знаешь о ядерной физике?","from":{"id":"0000usr"},"chat":{"id":"0000usr"}}}','to tst0040usr: Что ты знаешь о ядерной физике\? hints:Не уверен, что хочу об этом говорить',
     '{"message":{"text":"/stopproxy","from":{"id":"0040usr"},"chat":{"id":"0040usr"}}}','to tst0040usr: Сеанс прокси с пользователем /tst0000usr завершен',
 ];
 
@@ -73,8 +74,11 @@ for($i=0;isset($test_plan[$i]);$i++) {
     }
     $answer = ob_get_clean();
     $i++;
-    if ($answer != $test_plan[$i]) {
-        echo "FAIL!!! - Получено \"$answer\", ожидалось \"$test_plan[$i]\"\n";
+    $pattern = '|^'.$test_plan[$i].'$|m';
+    $match = preg_match($pattern, $answer);
+    if ($match === false) {throw new Exception("Ошибка ".  preg_last_error()." при обработке $pattern");}
+    if (!$match) {
+        echo "FAIL!!! - Получено \"$answer\", ожидалось $pattern\n";
         die();
     }
     echo '.';
