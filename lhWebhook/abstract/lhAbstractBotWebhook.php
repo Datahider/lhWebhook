@@ -48,17 +48,25 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->initRequest();
         $text = $this->getRequestText();
         
-        if ($text) {
-            $answer = $this->processAdminActions($text);
-            if (!$answer) {
-                $this->initChatterBox();
-                $answer = $this->processChatterbox($text); 
-                $answer = $this->processProxy($text, $answer);
+        try {
+            if ($text) {
+                $answer = $this->processAdminActions($text);
+                if (!$answer) {
+                    $this->initChatterBox();
+                    $answer = $this->processChatterbox($text); 
+                    $answer = $this->processProxy($text, $answer);
+                }
+            } else {
+                $answer = ['text' => lhTextConv::smilesSubstitutions(":think:")];
             }
-        } else {
-            $answer = ['text' => lhTextConv::smilesSubstitutions(":think:")];
+            $this->sendMessage($answer);
         }
-        $this->sendMessage($answer);
+        catch (Exception $e) {
+            $message = $e->getMessage();
+            $trace = $e->getTraceAsString();
+            $from = $this->getRequestSender();
+            $this->sendMessage([ 'text' => "Вызвано исключение при обработке запроса \"$text\" от $from.\nСообщение: $message\nТрассировка:\n$trace"], $this->botdata->get('bot_admin'));
+        }
         return '';
     }
     
@@ -110,7 +118,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->session->log('fullchat', 'IN', $text);
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
         $bot_username = $this->botdata->get('bot_username');
-        $match = $this->getRequestChat() == $this->getRequestSender() 
+        $match = $this->getRequestChat() == $this->getRequestChat() // всегда без суффикса
             ? preg_match("/\/(\S+)(\s*(.*))$/", $full_command, $matches)
             : preg_match("/\/(\S+)\@$bot_username(\s*(.*))$/", $full_command, $matches);
         if ($match) {
