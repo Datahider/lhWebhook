@@ -19,6 +19,7 @@ class lhTgBot extends lhAbstractBotWebhook {
         $json = stream_get_contents($f);
         
         $this->request = json_decode($json);
+        error_log(print_r($this->request, true));
     }
     
     protected function getRequestText() {
