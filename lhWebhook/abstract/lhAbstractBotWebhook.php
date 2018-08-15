@@ -48,6 +48,7 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
         $this->initRequest();
         $text = $this->getRequestText();
         
+        $this->session = new lhSessionFile($this->getRequestSender());
         try {
             if ($text) {
                 $answer = $this->processAdminActions($text);
@@ -118,7 +119,6 @@ abstract class lhAbstractBotWebhook implements lhWebhookInterface{
     }
     
     protected function processAdminActions($text) {
-        $this->session = new lhSessionFile($this->getRequestSender());
         $this->session->log('fullchat', 'IN', $text);
         $full_command = $this->session->get('bot_command', '') . ' ' . $text;
         $bot_username = $this->botdata->get('bot_username');

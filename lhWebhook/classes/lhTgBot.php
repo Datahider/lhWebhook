@@ -30,7 +30,6 @@ class lhTgBot extends lhAbstractBotWebhook {
     }
     
     protected function getRequestSender() {
-        error_log('sender='.$this->sessionPrefix().$this->request->message->from->id);
         return $this->sessionPrefix().$this->request->message->from->id;
     }
 
