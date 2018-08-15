@@ -19,7 +19,6 @@ class lhTgBot extends lhAbstractBotWebhook {
         $json = stream_get_contents($f);
         
         $this->request = json_decode($json);
-        error_log(print_r($this->request, true));
     }
     
     protected function getRequestText() {
@@ -31,6 +30,7 @@ class lhTgBot extends lhAbstractBotWebhook {
     }
     
     protected function getRequestSender() {
+        error_log('sender='.$this->sessionPrefix().$this->request->message->from->id);
         return $this->sessionPrefix().$this->request->message->from->id;
     }
 
